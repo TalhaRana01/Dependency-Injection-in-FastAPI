@@ -1,24 +1,75 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from typing import Annotated
 
 app = FastAPI()
 
 
-# Sync and Async Dependency Injection
+
+# ===================================== Hierarchical Dependencies ========================================================
+
+# A dependency khud kisi aur dependency par depend karti ho.
+# Yani ek dependency ke andar bhi Depends() use hota hai.
+
+# async def user_auth():
+#   return  {"user_id": "123"}
+
+
+
+# async def user_role(user: Annotated[dict, Depends(user_auth)]):
+#   return {"user_id" : user["user_id"], "role": "admin"}
+
+
+# @app.get("/admin")
+# async def admin_only(role: Annotated[dict, Depends(user_role)]):
+#   return role
+
+
+
+def decode_token(token: str):
+    if token != "secret123":
+        raise HTTPException(401, "Invalid token")
+    return {"user_id": 1}
+
+
+
+def get_current_user(data = Depends(decode_token)):
+    return {"id": data["user_id"], "name": "Talha"}
+  
+
+
+@app.get("/profile")
+def profile(user = Depends(get_current_user)):
+    return {"profile": user}
+  
+  
+#   /profile (route)
+#     ↑
+# get_current_user (dependency)
+#     ↑
+# decode_token (dependency)
+
+
+
+  
+  
+
+
+
+# ============================= Sync and Async Dependency Injection =====================================================
 
 # sync Dependency
-def sync_dep():
-  return { "message" : "I'm sync"}
+# def sync_dep():
+#   return { "message" : "I'm sync"}
 
 
-# async Dependency
-async def async_dep():
-  return { "message" : "I'm async"}
+# # async Dependency
+# async def async_dep():
+#   return { "message" : "I'm async"}
 
 
-@app.get("/test")
-async def get(asyncresult: Annotated[dict, Depends(async_dep)], syncresult: Annotated[dict, Depends(sync_dep)]):
-  return  {"sync": syncresult, "async" : asyncresult}
+# @app.get("/test")
+# async def get(asyncresult: Annotated[dict, Depends(async_dep)], syncresult: Annotated[dict, Depends(sync_dep)]):
+#   return  {"sync": syncresult, "async" : asyncresult}
   
 
 
