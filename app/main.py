@@ -5,6 +5,31 @@ app = FastAPI()
 
 
 
+#=================================== Creating Dependencis Class ===================================================
+
+class CommonQueryParams:
+  def __init__(self, q: str | None = None, skip: int = 0, limit : int = 100):
+    
+    self.q = q
+    self.skip = skip
+    self.limit = limit
+    
+# Using Class Dependencies in Endpoints or routes
+
+
+comDep = Annotated[CommonQueryParams, Depends(CommonQueryParams)]
+
+@app.get("/items")
+async def get_items(common: comDep):
+  
+  return common
+  
+
+
+    
+    
+
+
 # ===================================== Hierarchical Dependencies ========================================================
 
 # A dependency khud kisi aur dependency par depend karti ho.
@@ -25,21 +50,21 @@ app = FastAPI()
 
 
 
-def decode_token(token: str):
-    if token != "secret123":
-        raise HTTPException(401, "Invalid token")
-    return {"user_id": 1}
+# def decode_token(token: str):
+#     if token != "secret123":
+#         raise HTTPException(401, "Invalid token")
+#     return {"user_id": 1}
 
 
 
-def get_current_user(data = Depends(decode_token)):
-    return {"id": data["user_id"], "name": "Talha"}
+# def get_current_user(data = Depends(decode_token)):
+#     return {"id": data["user_id"], "name": "Talha"}
   
 
 
-@app.get("/profile")
-def profile(user = Depends(get_current_user)):
-    return {"profile": user}
+# @app.get("/profile")
+# def profile(user = Depends(get_current_user)):
+#     return {"profile": user}
   
   
 
