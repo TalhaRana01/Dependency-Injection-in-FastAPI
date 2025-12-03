@@ -1,28 +1,44 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Header
 from typing import Annotated
 
 app = FastAPI()
 
 
 
+#===================================  Dependencies in Path Operation Decoratores  ===================================================
+
+async def verify_token(x_token : Annotated[str, Header()]):
+  if x_token != "secret123":
+    raise HTTPException(status_code=400, detail="X-Token header Invalid")
+  return x_token
+
+
+@app.get("/items", dependencies=[Depends(verify_token)])
+async def get_items():
+  return { "data" : "All Items"}
+
+
+
+
+
 #=================================== Creating Dependencis Class ===================================================
 
-class CommonQueryParams:
-  def __init__(self, q: str | None = None, skip: int = 0, limit : int = 100):
+# class CommonQueryParams:
+#   def __init__(self, q: str | None = None, skip: int = 0, limit : int = 100):
     
-    self.q = q
-    self.skip = skip
-    self.limit = limit
+#     self.q = q
+#     self.skip = skip
+#     self.limit = limit
     
-# Using Class Dependencies in Endpoints or routes
+# # Using Class Dependencies in Endpoints or routes
 
 
-comDep = Annotated[CommonQueryParams, Depends(CommonQueryParams)]
+# comDep = Annotated[CommonQueryParams, Depends(CommonQueryParams)]
 
-@app.get("/items")
-async def get_items(common: comDep):
+# @app.get("/items")
+# async def get_items(common: comDep):
   
-  return common
+#   return common
   
 
 
