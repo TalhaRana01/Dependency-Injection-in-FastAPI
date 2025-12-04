@@ -3,36 +3,60 @@ from typing import Annotated
 from app.routers import router as user
 from app.routers import verify_token
 
+# app = FastAPI()
+
+# ================================== Creating and using environment variables ===============================
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 app = FastAPI()
+
+# Method 1
+# os.getenv("API_SECRET_KEY")
+
+# Method 2
+
+@app.get("/")
+def read_env():
+  return {
+    "api_secret" : os.getenv("API_SECRET_KEY"),
+    "debug_mode" : os.getenv("DEBUG"),
+  }
+
+
+
+
 
 #===================================  Dependencies with yield  ======================================================================
 
-class OwnerError(Exception):
-  pass
+# class OwnerError(Exception):
+#   pass
 
 
-def get_username():
-  try:
-    yield "taha"
-  except OwnerError as e:
-    raise HTTPException(status_code=400, detail=f"Owner error : {e}")
+# def get_username():
+#   try:
+#     yield "taha"
+#   except OwnerError as e:
+#     raise HTTPException(status_code=400, detail=f"Owner error : {e}")
 
-@app.get("/items/{item_id}")
-def get_items(item_id: str, username: Annotated[str, Depends(get_username)]):
+# @app.get("/items/{item_id}")
+# def get_items(item_id: str, username: Annotated[str, Depends(get_username)]):
   
-    data = {
-      "product 1": {"description" : "this is a description of product one", "ower": "ali"},
-      "product 2": {"description" : "this is a description of product two", "owner": "taha"},
-    }
+#     data = {
+#       "product 1": {"description" : "this is a description of product one", "ower": "ali"},
+#       "product 2": {"description" : "this is a description of product two", "owner": "taha"},
+#     }
     
-    if item_id not in data:
-      raise HTTPException(status_code=404, detail="Item not found")
+#     if item_id not in data:
+#       raise HTTPException(status_code=404, detail="Item not found")
     
-    item = data[item_id]
+#     item = data[item_id]
     
-    if item['owner'] != username:
-      raise OwnerError(username)
-    return item
+#     if item['owner'] != username:
+#       raise OwnerError(username)
+#     return item
       
       
   
