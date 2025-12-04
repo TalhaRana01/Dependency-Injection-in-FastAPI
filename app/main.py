@@ -3,27 +3,40 @@ from typing import Annotated
 from app.routers import router as user
 from app.routers import verify_token
 
-# app = FastAPI()
 
-# ================================== Creating and using environment variables ===============================
-from dotenv import load_dotenv
-import os
+# ======================================= Python Decouple =====================================================
 
-load_dotenv()
+from decouple import config
 
 app = FastAPI()
-
-# Method 1
-# os.getenv("API_SECRET_KEY")
-
-# Method 2
 
 @app.get("/")
 def read_env():
   return {
-    "api_secret" : os.getenv("API_SECRET_KEY"),
-    "debug_mode" : os.getenv("DEBUG"),
+    "api_secret" : config("API_SECRET_KEY"),
+    "debug_mode" : config("DEBUG", cast=bool),
   }
+  
+
+# ================================== Creating and using environment variables ===============================
+# from dotenv import load_dotenv
+# import os
+
+# load_dotenv()
+
+# app = FastAPI()
+
+# # Method 1
+# # os.getenv("API_SECRET_KEY")
+
+# # Method 2
+
+# @app.get("/")
+# def read_env():
+#   return {
+#     "api_secret" : os.getenv("API_SECRET_KEY"),
+#     "debug_mode" : os.getenv("DEBUG"),
+#   }
 
 
 
