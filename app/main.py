@@ -5,22 +5,52 @@ from app.routers import verify_token
 
 app = FastAPI()
 
+#===================================  Dependencies with yield  ======================================================================
+
+class OwnerError(Exception):
+  pass
+
+
+def get_username():
+  try:
+    yield "taha"
+  except OwnerError as e:
+    raise HTTPException(status_code=400, detail=f"Owner error : {e}")
+
+@app.get("/items/{item_id}")
+def get_items(item_id: str, username: Annotated[str, Depends(get_username)]):
+  
+    data = {
+      "product 1": {"description" : "this is a description of product one", "ower": "ali"},
+      "product 2": {"description" : "this is a description of product two", "owner": "taha"},
+    }
+    
+    if item_id not in data:
+      raise HTTPException(status_code=404, detail="Item not found")
+    
+    item = data[item_id]
+    
+    if item['owner'] != username:
+      raise OwnerError(username)
+    return item
+      
+      
+  
+    
+
+
+
+
+
+
+
 #===================================  Dependencies for a Group of Path Operation   ===================================================
 
 
 # app.include_router(user)
 
 # 2 Method using for dependency injection 
-app.include_router(user, dependencies=[Depends(verify_token)])
-
-
-
-
-
-
-
-
-
+# app.include_router(user, dependencies=[Depends(verify_token)])
 
 
 
